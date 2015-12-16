@@ -1,32 +1,20 @@
+import org.omg.PortableServer.THREAD_POLICY_ID;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
  class KeyboardListener extends KeyAdapter{
  	
- 		public void keyPressed(KeyEvent e){
- 		    switch(e.getKeyCode()){
-		    	case 39:	// вправо, если не противоположная сторона
+	 public void keyPressed(KeyEvent e) {
+		int keyCode = e.getKeyCode();
 
-		    				if(ThreadsController.directionSnake!=Way.LEFT)
-		    					ThreadsController.directionSnake=Way.RIGHT;
-		    			  	break;
-		    	case 38:	// наверх
-							if(ThreadsController.directionSnake!=Way.UP)
-								ThreadsController.directionSnake=Way.DOWN;
-		    				break;
-		    				
-		    	case 37: 	// влево
-							if(ThreadsController.directionSnake!=Way.RIGHT)
-								ThreadsController.directionSnake=Way.LEFT;
-		    				break;
-		    				
-		    	case 40:	// вниз
-							if(ThreadsController.directionSnake!=Way.DOWN)
-								ThreadsController.directionSnake=Way.UP;
-		    				break;
-		    	
-		    	default: 	break;
- 		    }
- 		}
- 	
- }
+		if (keyCode == KeyEvent.VK_LEFT)
+			ThreadsController.directionSnake=Way.VK_RIGHT;
+		else if (keyCode == KeyEvent.VK_UP)
+			ThreadsController.directionSnake=Way.VK_DOWN;
+		else if (keyCode == KeyEvent.VK_RIGHT)
+			ThreadsController.directionSnake=Way.VK_LEFT;
+		else if (keyCode == KeyEvent.VK_DOWN)
+			ThreadsController.directionSnake=Way.VK_UP;
+
+	}}

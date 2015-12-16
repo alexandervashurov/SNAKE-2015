@@ -2,5 +2,5 @@
  * Created by AlexVashurov on 26.11.15.
  */
 public enum Way {
-    UP, DOWN, LEFT, RIGHT
+    VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT
 }

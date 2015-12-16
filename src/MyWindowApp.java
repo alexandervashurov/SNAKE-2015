@@ -12,7 +12,7 @@ class MyWindowApp extends JFrame {
         super("Super Snake");
         JButton newGame = new JButton("New Game!");
         JButton exit = new JButton("Exit!");
-        JButton difficult = new JButton("Difficult");
+        JButton difficulty = new JButton("Difficulty");
 
         newGame.addActionListener(e -> {
             gameWindow = new Window(speed);
@@ -27,28 +27,28 @@ class MyWindowApp extends JFrame {
         //JPanel ButtonsPanel = new JPanel(new GridLayout());
         setLayout(new GridLayout(3, 3));
         add(newGame);
-        add(difficult);
+        add(difficulty);
         add(exit);
 
-        difficult.addActionListener(e -> {
+        difficulty.addActionListener(e -> {
 
-            DifficultWindow dialog = new DifficultWindow(this);
+            DifficultyWindow dialog = new DifficultyWindow(this);
             dialog.setVisible(true);
         });
 
 
     }
 
-    private void changeDifficult(int speed) {
+    private void changeDifficulty(int speed) {
         this.speed = speed;
     }
 
-    private class DifficultWindow extends JFrame {
+    private class DifficultyWindow extends JFrame {
         private final JButton easy;
         private final JButton medium;
         private final JButton hard;
 
-        public DifficultWindow(MyWindowApp app) {
+        public DifficultyWindow(MyWindowApp app) {
             super("Difficult");
             easy = new JButton("Easy");
             medium = new JButton("Medium");
@@ -61,15 +61,15 @@ class MyWindowApp extends JFrame {
             add(medium);
             add(hard);
             easy.addActionListener(e -> {
-                app.changeDifficult(150);
+                app.changeDifficulty(150);
                 dispose();
             });
             medium.addActionListener(e -> {
-                app.changeDifficult(90);
+                app.changeDifficulty(90);
                 dispose();
             });
             hard.addActionListener(e -> {
-                app.changeDifficult(50);
+                app.changeDifficulty(50);
                 dispose();
             });
         }

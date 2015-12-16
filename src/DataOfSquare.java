@@ -8,6 +8,6 @@ class DataOfSquare {
     }
 
     public void lightMeUp(Colors col) {
-        square.ChangeColor(col.getColor());
+        square.changeColor(col.getColor());
     }
 }

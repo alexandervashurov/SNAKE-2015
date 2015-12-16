@@ -12,9 +12,11 @@ class ThreadsController extends Thread {
     private int score = 0;
     public static Way directionSnake;
     private boolean play = true;
+    private int bonuschance = 1;
 
     private final ArrayList<Tuple> positions = new ArrayList<>();
     private Tuple foodPosition;
+    public Tuple bonusFoodPosition;
 
     //конструктор потока
     ThreadsController(Window win, Tuple positionDepart, int speed) {
@@ -22,7 +24,7 @@ class ThreadsController extends Thread {
         Squares = Window.Grid;
         this.speed = speed;
         headSnakePos = new Tuple(positionDepart.getX(), positionDepart.getY());
-        directionSnake = Way.RIGHT;
+        directionSnake = Way.VK_LEFT;
 
 
         Tuple headPos = new Tuple(headSnakePos.getX(), headSnakePos.getY());
@@ -30,6 +32,9 @@ class ThreadsController extends Thread {
 
         foodPosition = new Tuple(Window.height - 1, Window.width - 1);
         spawnFood(foodPosition);
+
+
+
 
     }
 
@@ -51,7 +56,9 @@ class ThreadsController extends Thread {
 
     //проверка аварии
     private void checkCollision() {
+
         Tuple posCritique = headSnakePos;
+
         for (int i = 0; i <= positions.size() - 2; i++) {
             boolean biteItself = posCritique.getX() == positions.get(i).getX() && posCritique.getY() == positions.get(i).getY();
             if (biteItself) {
@@ -60,19 +67,36 @@ class ThreadsController extends Thread {
 
             }
         }
-
+        bonusFoodPosition = new Tuple(Window.height - 4, Window.width - 1);
         boolean eatingFood = posCritique.getX() == foodPosition.getY() && posCritique.getY() == foodPosition.getX();
+        boolean eatingBonus = posCritique.getX() == bonusFoodPosition.getY() && posCritique.getY() == bonusFoodPosition.getX();
+
         if (eatingFood) {
             System.out.println("ПОЕЛ");
             score += 1000 / speed;
             sizeSnake = sizeSnake + 1;
-            foodPosition = getValAleaNotInSnake();
+            bonuschance = bonuschance + 1;
 
-            spawnFood(foodPosition);
-        }
-    }
+            if (bonuschance % 4 == 0) {
+
+                bonusFoodPosition = getValAreaNotInSnake();
+                spawnBonusFood(bonusFoodPosition);
+                if (eatingBonus) {
+                    System.out.print("БОНУС \n");
+                    score += 1000 / speed;
+                    bonuschance = 1;
+                }
+
+
+            }
+                foodPosition = getValAreaNotInSnake();
+                spawnFood(foodPosition);
+
+
+    }}
 
     //конец игры
+
     private void stopTheGame() {
         System.out.println("НАЖРАЛСЯ \n");
         play = false;
@@ -86,8 +110,12 @@ class ThreadsController extends Thread {
         Squares.get(foodPositionIn.getX()).get(foodPositionIn.getY()).lightMeUp(Colors.EAT);
     }
 
+    private void spawnBonusFood(Tuple bonusFoodPositionIn) {
+        Squares.get(bonusFoodPositionIn.getX()).get(bonusFoodPositionIn.getY()).lightMeUp(Colors.BONUS);
+    }
+
     //где змейки нет
-    private Tuple getValAleaNotInSnake() {
+    private Tuple getValAreaNotInSnake() {
         Tuple p;
         int ranX = (int) (Math.random() * 19);
         int ranY = (int) (Math.random() * 19);
@@ -106,11 +134,11 @@ class ThreadsController extends Thread {
     //изменяет голову змеи и обновляет массив
     private void move(Way dir) {
         switch (dir) {
-            case UP:
+            case VK_UP:
                 headSnakePos.ChangeData(headSnakePos.getX(), (headSnakePos.getY() + 1) % 20);
                 positions.add(new Tuple(headSnakePos.getX(), headSnakePos.getY()));
                 break;
-            case DOWN:
+            case VK_DOWN:
                 if (headSnakePos.getY() - 1 < 0) {
                     headSnakePos.ChangeData(headSnakePos.getX(), 19);
                 } else {
@@ -118,7 +146,7 @@ class ThreadsController extends Thread {
                 }
                 positions.add(new Tuple(headSnakePos.getX(), headSnakePos.getY()));
                 break;
-            case LEFT:
+            case VK_RIGHT:
                 if (headSnakePos.getX() - 1 < 0) {
                     headSnakePos.ChangeData(19, headSnakePos.getY());
                 } else {
@@ -127,10 +155,13 @@ class ThreadsController extends Thread {
                 positions.add(new Tuple(headSnakePos.getX(), headSnakePos.getY()));
 
                 break;
-            case RIGHT:
+
+            case VK_LEFT:
                 headSnakePos.ChangeData(Math.abs(headSnakePos.getX() + 1) % 20, headSnakePos.getY());
                 positions.add(new Tuple(headSnakePos.getX(), headSnakePos.getY()));
                 break;
+
+
         }
     }
 
