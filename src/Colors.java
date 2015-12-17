@@ -4,7 +4,9 @@ public enum Colors {
     EAT(Color.BLUE),
     SNAKE(Color.DARK_GRAY),
     BONUS(Color.GREEN),
-    FREE_SPACE(Color.WHITE);
+    FREE_SPACE(Color.WHITE),
+    WALL(Color.BLACK);
+
 
     private final Color color;
 

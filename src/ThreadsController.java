@@ -1,28 +1,32 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 //змейка
 class ThreadsController extends Thread {
-    private List<List<DataOfSquare>> Squares = new ArrayList<>();
+    public static Way directionSnake;
     private final Window gameWindow;
     private final Tuple headSnakePos;
-    private int sizeSnake = 3;
     private final long speed;
-    private int score = 0;
-    public static Way directionSnake;
-    private boolean play = true;
-    private int bonuschance = 1;
-
+    private final boolean gameMode;
+    private boolean walls;
+    private final Random randomizer = new Random();
     private final ArrayList<Tuple> positions = new ArrayList<>();
-    private Tuple foodPosition;
     public Tuple bonusFoodPosition;
+    private List<List<DataOfSquare>> squares = new ArrayList<>();
+    private int sizeSnake = 3;
+    public int score = 0;
+    private boolean play = true;
+    private int bonusChance = 1;
+    private Tuple foodPosition;
 
-    //конструктор потока
-    ThreadsController(Window win, Tuple positionDepart, int speed) {
+
+    ThreadsController(Window win, Tuple positionDepart, int speed, boolean gameMode) {
         gameWindow = win;
-        Squares = Window.Grid;
+        squares = Window.Grid;
         this.speed = speed;
+        this.gameMode = gameMode;
         headSnakePos = new Tuple(positionDepart.getX(), positionDepart.getY());
         directionSnake = Way.VK_LEFT;
 
@@ -30,15 +34,14 @@ class ThreadsController extends Thread {
         Tuple headPos = new Tuple(headSnakePos.getX(), headSnakePos.getY());
         positions.add(headPos);
 
-        foodPosition = new Tuple(Window.height - 1, Window.width - 1);
+        foodPosition = new Tuple(Window.height - 4, Window.width - 3);
         spawnFood(foodPosition);
-
-
 
 
     }
 
     public void run() {
+
         try {
             while (play) {
                 move(directionSnake);
@@ -54,10 +57,23 @@ class ThreadsController extends Thread {
     }
 
 
-    //проверка аварии
+
     private void checkCollision() {
 
         Tuple posCritique = headSnakePos;
+
+        if (gameMode) {
+            if (headSnakePos.getX() == 0
+                    || headSnakePos.getX() == squares.size() - 1
+                    || headSnakePos.getY() == 0
+                    || headSnakePos.getY() == squares.get(0).size()
+                    ) {
+                stopTheGame();
+            }
+
+
+        }
+
 
         for (int i = 0; i <= positions.size() - 2; i++) {
             boolean biteItself = posCritique.getX() == positions.get(i).getX() && posCritique.getY() == positions.get(i).getY();
@@ -67,7 +83,7 @@ class ThreadsController extends Thread {
 
             }
         }
-        bonusFoodPosition = new Tuple(Window.height - 4, Window.width - 1);
+        bonusFoodPosition = new Tuple(Window.height - 1, Window.width - 1);
         boolean eatingFood = posCritique.getX() == foodPosition.getY() && posCritique.getY() == foodPosition.getX();
         boolean eatingBonus = posCritique.getX() == bonusFoodPosition.getY() && posCritique.getY() == bonusFoodPosition.getX();
 
@@ -75,60 +91,64 @@ class ThreadsController extends Thread {
             System.out.println("ПОЕЛ");
             score += 1000 / speed;
             sizeSnake = sizeSnake + 1;
-            bonuschance = bonuschance + 1;
+            bonusChance = bonusChance + 1;
 
-            if (bonuschance % 4 == 0) {
+            foodPosition = getValAreaNotInSnake();
+            spawnFood(foodPosition);
+
+            if (bonusChance % 4 == 0) {
 
                 bonusFoodPosition = getValAreaNotInSnake();
                 spawnBonusFood(bonusFoodPosition);
-                if (eatingBonus) {
-                    System.out.print("БОНУС \n");
-                    score += 1000 / speed;
-                    bonuschance = 1;
-                }
-
 
             }
-                foodPosition = getValAreaNotInSnake();
-                spawnFood(foodPosition);
 
-
-    }}
-
-    //конец игры
-
-    private void stopTheGame() {
-        System.out.println("НАЖРАЛСЯ \n");
-        play = false;
-        gameWindow.showScore(score);
-
-
+        }
+        if (eatingBonus) {
+            System.out.print("БОНУС ");
+            score += 1000 / speed;
+            bonusChance = 1;
+        }
     }
 
-    //Расположение писчи
+
+    private void stopTheGame() {
+        System.out.println("ОБЪЕЛСЯ \n");
+        play = false;
+    }
+
+
     private void spawnFood(Tuple foodPositionIn) {
-        Squares.get(foodPositionIn.getX()).get(foodPositionIn.getY()).lightMeUp(Colors.EAT);
+        squares.get(foodPositionIn.getX()).get(foodPositionIn.getY()).lightMeUp(Colors.EAT);
     }
 
     private void spawnBonusFood(Tuple bonusFoodPositionIn) {
-        Squares.get(bonusFoodPositionIn.getX()).get(bonusFoodPositionIn.getY()).lightMeUp(Colors.BONUS);
+        squares.get(bonusFoodPositionIn.getX()).get(bonusFoodPositionIn.getY()).lightMeUp(Colors.BONUS);
     }
 
-    //где змейки нет
+
     private Tuple getValAreaNotInSnake() {
-        Tuple p;
-        int ranX = (int) (Math.random() * 19);
-        int ranY = (int) (Math.random() * 19);
-        p = new Tuple(ranX, ranY);
-        for (int i = 0; i <= positions.size() - 1; i++) {
-            if (p.getY() == positions.get(i).getX() && p.getX() == positions.get(i).getY()) {
-                ranX = (int) (Math.random() * 19);
-                ranY = (int) (Math.random() * 19);
-                p = new Tuple(ranX, ranY);
-                i = 0;
+
+        int i = randomizer.nextInt(squares.size());
+        int j = randomizer.nextInt(squares.get(i).size());
+        if (gameMode) {
+            i = (i == 0) ? i + 1 : i;
+            i = (i == squares.size() - 1) ? i - 1 : i;
+            j = (j == 0) ? j + 1 : j;
+            j = (j == squares.get(0).size() - 1) ? j - 1 : j;
+        }
+        while (!squares.get(i).get(j).getState().equals(Colors.FREE_SPACE)) {
+            i = randomizer.nextInt(squares.size());
+            j = randomizer.nextInt(squares.get(i).size());
+            if (gameMode) {
+                i = (i == 0) ? i + 1 : i;
+                i = (i == squares.size() - 1) ? i - 1 : i;
+                j = (j == 0) ? j + 1 : j;
+                j = (j == squares.get(0).size() - 1) ? j - 1 : j;
             }
         }
-        return p;
+
+        return new Tuple(i, j);
     }
 
     //изменяет голову змеи и обновляет массив
@@ -170,7 +190,7 @@ class ThreadsController extends Thread {
         for (Tuple t : positions) {
             int y = t.getX();
             int x = t.getY();
-            Squares.get(x).get(y).lightMeUp(Colors.SNAKE);
+            squares.get(x).get(y).lightMeUp(Colors.SNAKE);
 
         }
     }
@@ -182,7 +202,7 @@ class ThreadsController extends Thread {
             if (size == 0) {
 
                 Tuple t = positions.get(i);
-                Squares.get(t.getY()).get(t.getX()).lightMeUp(Colors.FREE_SPACE);
+                squares.get(t.getY()).get(t.getX()).lightMeUp(Colors.FREE_SPACE);
                 positions.remove(i);
             } else {
                 size--;

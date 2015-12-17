@@ -4,7 +4,7 @@ class Main {
 
 	public static void main(String[] args) {
 
-        MyWindowApp f1= new MyWindowApp();
+       	MainWindow f1= new MainWindow();
         f1.setLocationRelativeTo(null);
 		f1.setSize(150 ,350);
 		f1.setVisible(true);

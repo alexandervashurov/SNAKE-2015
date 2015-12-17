@@ -4,32 +4,39 @@ import java.awt.*;
 /**
  * Created by AlexVashurov on 10.12.15.
  */
-class MyWindowApp extends JFrame {
+class MainWindow extends JFrame {
+    private boolean gameMode = false;
     private Window gameWindow;
     private int speed = 100;
 
-    public MyWindowApp() {
+
+    public MainWindow() {
         super("Super Snake");
         JButton newGame = new JButton("New Game!");
         JButton exit = new JButton("Exit!");
         JButton difficulty = new JButton("Difficulty");
+        JButton gameMod = new JButton("Game Mode");
 
         newGame.addActionListener(e -> {
-            gameWindow = new Window(speed);
+            gameWindow = new Window(speed, gameMode);
             gameWindow.setLocation(400, 200);
             gameWindow.setSize(450, 500);
             gameWindow.setVisible(true);
             gameWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
         });
 
         exit.addActionListener(e -> this.dispose());
 
-        //JPanel ButtonsPanel = new JPanel(new GridLayout());
-        setLayout(new GridLayout(3, 3));
+        setLayout(new GridLayout(4, 4));
         add(newGame);
+        add(gameMod);
         add(difficulty);
         add(exit);
-
+        gameMod.addActionListener(e1 -> {
+            ChangeGameWindow dialog = new ChangeGameWindow(this);
+            dialog.setVisible(true);
+        });
         difficulty.addActionListener(e -> {
 
             DifficultyWindow dialog = new DifficultyWindow(this);
@@ -48,7 +55,7 @@ class MyWindowApp extends JFrame {
         private final JButton medium;
         private final JButton hard;
 
-        public DifficultyWindow(MyWindowApp app) {
+        public DifficultyWindow(MainWindow app) {
             super("Difficult");
             easy = new JButton("Easy");
             medium = new JButton("Medium");
@@ -75,7 +82,38 @@ class MyWindowApp extends JFrame {
         }
 
     }
+
+    private void changeGame(boolean gameMode) {
+        this.gameMode=gameMode;
+    }
+
+    private class ChangeGameWindow extends JFrame {
+        private final JButton withoutWalls;
+        private final JButton withWalls;
+
+        public ChangeGameWindow(MainWindow app) {
+            super("Chose");
+            withoutWalls = new JButton("No Walls");
+            withWalls = new JButton("With Walls");
+            setSize(350, 150);
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            setLocationRelativeTo(null);
+            setLayout(new GridLayout(1, 2));
+            add(withoutWalls);
+            add(withWalls);
+            withoutWalls.addActionListener(e -> {
+                app.changeGame(false);
+                dispose();
+            });
+            withWalls.addActionListener(e -> {
+                app.changeGame(true);
+                dispose();
+            });
+        }
+    }
 }
+
+
 
 
 

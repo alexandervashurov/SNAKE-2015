@@ -13,5 +13,6 @@ class SquarePanel extends JPanel {
         this.repaint();
     }
 
+
 }
 

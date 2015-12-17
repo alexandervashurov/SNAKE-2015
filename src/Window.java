@@ -11,16 +11,15 @@ class Window extends JFrame {
     public static final int width = 20;
     public static final int height = 20;
     private final ThreadsController gameThread;
-    private final JLabel scoreLabel = new JLabel();
 
-    public Window(int speed) {
-        // add(scoreLabel);
-        scoreLabel.setVisible(false);
+
+    public Window(int speed, boolean gameMode) {
         // массив клеток
         Grid = new ArrayList<>();
         List<DataOfSquare> data;
 
         // создание клеток
+
         for (int i = 0; i < width; i++) {
             data = new ArrayList<>();
             for (int j = 0; j < height; j++) {
@@ -28,6 +27,17 @@ class Window extends JFrame {
                 data.add(c);
             }
             Grid.add(data);
+        }
+
+        if (gameMode) {
+            for (int i=0 ; i<width; i++){
+                Grid.get(0).set(i,new DataOfSquare(Colors.WALL));
+                Grid.get(height-1).set(i, new DataOfSquare(Colors.WALL));
+            }
+            for (int i = 0; i < height; i++) {
+                Grid.get(i).set(0, new DataOfSquare(Colors.WALL));
+                Grid.get(i).set(width-1, new DataOfSquare(Colors.WALL));
+            }
         }
 
         // размер поля
@@ -42,7 +52,7 @@ class Window extends JFrame {
 
         // инициализация позиции змеи
         Tuple position = new Tuple(10, 10);
-        gameThread = new ThreadsController(this, position, speed);
+        gameThread = new ThreadsController(this, position, speed,gameMode);
         //старт
         gameThread.start();
 
@@ -59,16 +69,10 @@ class Window extends JFrame {
         });
 
 
-    }
 
-    public void showScore(int score) {
 
-        scoreLabel.setSize(200, 40);
-        scoreLabel.setText("Your score is " + score);
-        scoreLabel.setVisible(true);
-        getContentPane().
-        add(scoreLabel, CENTER_ALIGNMENT);
-        repaint();
     }
 
 }
+
+

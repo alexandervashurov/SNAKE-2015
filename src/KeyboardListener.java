@@ -8,13 +8,19 @@ import java.awt.event.KeyEvent;
 	 public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 
-		if (keyCode == KeyEvent.VK_LEFT)
-			ThreadsController.directionSnake=Way.VK_RIGHT;
-		else if (keyCode == KeyEvent.VK_UP)
-			ThreadsController.directionSnake=Way.VK_DOWN;
-		else if (keyCode == KeyEvent.VK_RIGHT)
-			ThreadsController.directionSnake=Way.VK_LEFT;
-		else if (keyCode == KeyEvent.VK_DOWN)
-			ThreadsController.directionSnake=Way.VK_UP;
+		 switch (keyCode) {
+			 case KeyEvent.VK_LEFT:
+				 ThreadsController.directionSnake = Way.VK_RIGHT;
+				 break;
+			 case KeyEvent.VK_UP:
+				 ThreadsController.directionSnake = Way.VK_DOWN;
+				 break;
+			 case KeyEvent.VK_RIGHT:
+				 ThreadsController.directionSnake = Way.VK_LEFT;
+				 break;
+			 case KeyEvent.VK_DOWN:
+				 ThreadsController.directionSnake = Way.VK_UP;
+				 break;
+		 }
 
 	}}
